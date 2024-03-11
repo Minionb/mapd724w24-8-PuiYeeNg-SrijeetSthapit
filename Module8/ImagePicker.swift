@@ -9,6 +9,7 @@ import SwiftUI
 import PhotosUI
 
 class PhotosState: ObservableObject {
+
     @Published var photoItem: PhotosPickerItem? {
         didSet {
             print("Photo Selected \(photoItem.debugDescription)")
@@ -17,15 +18,17 @@ class PhotosState: ObservableObject {
                     case .failure(let error):
                         print(error.localizedDescription)
                     case .success(let image):
-                        self.image = image
+                    self.images.append(image!)
                 }
             }
+            print(images.last ?? "No images")
         }
+       
     }
-
+    
+    @Published var images: [Image] = []
+    
     @Published var fileURL: URL?
-
-    @Published var image: Image?
 
 }
 
@@ -33,16 +36,12 @@ struct ImagePicker: View {
     @StateObject var state = PhotosState()
     @State var presentPhotos = false
     @State var presentFiles = false
+   
 
     var body: some View {
         VStack(spacing: 0) {
-            Color.green
-                .overlay(
-            state.image?
-                .resizable()
-                .aspectRatio(1, contentMode: .fit)
-            )
-
+            PhotoView(state: state)
+                
             HStack(spacing: 0) {
                 Button {
                     presentPhotos = true
@@ -71,6 +70,32 @@ struct ImagePicker: View {
         }
     }
 }
+
+struct PhotoView : View{
+    @ObservedObject var state = PhotosState()
+    
+    
+    var body: some View {
+        
+        if (state.images.count > 0 ) {
+            state.images.last?
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .edgesIgnoringSafeArea(.all)
+            
+            
+            } else {
+                Color.green
+                    .edgesIgnoringSafeArea(.all)
+           }
+    }
+    
+}
+
+
+
+
 
 #Preview {
     ImagePicker()
