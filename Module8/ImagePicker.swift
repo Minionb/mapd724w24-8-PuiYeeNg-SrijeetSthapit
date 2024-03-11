@@ -36,11 +36,16 @@ struct ImagePicker: View {
     @StateObject var state = PhotosState()
     @State var presentPhotos = false
     @State var presentFiles = false
+    @State private var isShowingHistory = false
    
 
     var body: some View {
         VStack(spacing: 0) {
-            PhotoView(state: state)
+           
+                PhotoView(state: state, isShowingHistory: $isShowingHistory)
+             
+                
+            
                 
             HStack(spacing: 0) {
                 Button {
@@ -73,29 +78,62 @@ struct ImagePicker: View {
 
 struct PhotoView : View{
     @ObservedObject var state = PhotosState()
+    @Binding var isShowingHistory : Bool
     
     
     var body: some View {
         
-        if (state.images.count > 0 ) {
-            state.images.last?
+        ZStack(alignment: .topTrailing) {
+            if (state.images.count > 0 ) {
+                GeometryReader { geometry in
+                    state.images.last?
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(width: geometry.size.width, height: .infinity)
+                        .clipped()
                         .edgesIgnoringSafeArea(.all)
-            
-            
+                }
+                if (state.images.count > 1 ){
+                    Button(action: {
+                        isShowingHistory.toggle()
+                    }) {
+                        Text("History")
+                            .padding()
+                            .background(Color.white)
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
+                            .opacity(0.8)
+                    }
+                    .padding(16)
+                }
             } else {
                 Color.green
                     .edgesIgnoringSafeArea(.all)
-           }
+            }
+        }
+        .sheet(isPresented: $isShowingHistory) {
+                    PhotoHistoryView(images: state.images)
+                }
     }
-    
 }
 
+struct PhotoHistoryView: View {
+    var images: [Image]
 
-
-
+    var body: some View {
+        Color
+            .green
+            .overlay(
+                HStack {
+                       ForEach(images.indices, id: \.self) { index in
+                           images[index]
+                               .resizable()
+                               .aspectRatio(contentMode: .fit)
+                        }
+                    }
+            )
+    }
+}
 
 #Preview {
     ImagePicker()
