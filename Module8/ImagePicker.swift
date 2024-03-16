@@ -24,7 +24,6 @@ class PhotosState: ObservableObject {
                     }
                 }
             }
-            print(images.last ?? "No images")
         }
     }
     
@@ -79,7 +78,8 @@ struct PhotoView : View {
             if state.images.count > 0 {
                 state.images[state.images.count-1]
                     .resizable()
-                    .aspectRatio(1, contentMode: .fit)
+                    .aspectRatio(1, contentMode: .fill)
+                    .ignoresSafeArea()
                 if state.images.count > 1 {
                     Button(action: {
                         isShowingHistory.toggle()
@@ -94,7 +94,7 @@ struct PhotoView : View {
                     .padding(16)
                 }
             } else {
-                Color.green
+                Color.white
                     .edgesIgnoringSafeArea(.all)
             }
         }
@@ -126,6 +126,7 @@ struct PhotoHistoryView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 150, height: 150)
+                                .clipped()
                             .overlay(deleteButton(for: index))
                     }
                 }
@@ -138,9 +139,10 @@ struct PhotoHistoryView: View {
                     ForEach(images.indices, id: \.self) { index in
                         images[index]
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 100, height: 100)
-                    }
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 80, height: 80)
+                            .clipped()
+                    }.padding(5)
                 }
             }
         }
