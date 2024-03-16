@@ -38,9 +38,9 @@ struct ImagePicker: View {
     @State private var isShowingHistory = false
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 8) {
             PhotoView(state: state, isShowingHistory: $isShowingHistory) // Pass isSheetLarge as a binding parameter
-            HStack(spacing: 0) {
+            HStack(spacing: 8) {
                 Button {
                     presentPhotos = true
                 } label: {
@@ -120,7 +120,7 @@ struct PhotoHistoryView: View {
     private var contentOverlay: some View {
         if currentDetent == .large {
             ScrollView {
-                VStack(alignment: .center, spacing: 5) {
+                VStack(alignment: .center, spacing: 10) {
                     ForEach(images.indices, id: \.self) { index in
                         images[index]
                             .resizable()
@@ -135,15 +135,16 @@ struct PhotoHistoryView: View {
             }
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
+                HStack (alignment: .center, spacing: 10){
                     ForEach(images.indices, id: \.self) { index in
                         images[index]
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 80, height: 80)
                             .clipped()
-                    }.padding(5)
+                    }
                 }
+                .padding()
             }
         }
     }
